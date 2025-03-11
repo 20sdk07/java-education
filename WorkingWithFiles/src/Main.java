@@ -26,7 +26,7 @@ public class Main {
             writer.newLine();
             writer.write("Ali");
             writer.newLine();
-            writer.write("ammağğğn\n");
+            writer.write("smmağğğn\n");
             writer.close();
         } catch (IOException e) {
             System.out.println("An error occurred.");
