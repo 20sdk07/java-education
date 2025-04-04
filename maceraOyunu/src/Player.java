@@ -135,7 +135,7 @@ public class Player {
         this.originHealth = originHealth;
     }
   
-    public void showInventory() {
+    public void showInventory() { 
         System.out.println("######## ENVANTER ########");
         System.out.println("Silah: " + this.getInventory().getWeapon().getName() + " (Hasar: " + this.getInventory().getWeapon().getDamage() + ")");
         System.out.println("Zırh: " + this.getInventory().getArmor().getName() + " (Bloklama: " + this.getInventory().getArmor().getBlock() + ")");

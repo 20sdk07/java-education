@@ -5,7 +5,6 @@ public class Forest extends BattleLoc{
     
     @Override
     public boolean onLocation() {
-        System.out.println("######## ORMANA HOŞGELDİNİZ ########");
         return super.onLocation();
     }
     

@@ -5,8 +5,8 @@ public class Cave extends BattleLoc {
 
     @Override
     public boolean onLocation() {
-        System.out.println("######## MAĞARAYA HOŞGELDİNİZ ########");
         return super.onLocation();
     }
+    
     
 }

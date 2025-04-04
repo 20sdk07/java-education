@@ -1,7 +1,7 @@
 public class Zombie extends Obstacle {
 
     public Zombie() {
-        super( 1, "Zombi", 20, 20,3);
+        super( 1, "Zombi", 8, 5,3);
     }
     
 }

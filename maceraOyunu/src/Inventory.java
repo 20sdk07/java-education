@@ -20,7 +20,14 @@ public class Inventory {
         System.out.println("Tüm ödüller zaten toplandı!");
     }
 
-    
+    public boolean hasAward(String award) {
+        for (String a : awardList) {
+            if (award.equals(a)) {
+                return true; // Ödül zaten var
+            }
+        }
+        return false; // Ödül yok
+    }
 
     public String[] getAwardList() {
         return awardList;

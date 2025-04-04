@@ -6,15 +6,17 @@ public class Game {
     private final Scanner input = new Scanner(System.in);
 
     public void start() {
-        System.out.println("MACERA OYUNUNA HOŞGELDİNİZ !");
+        System.out.println("######## JAVA ADASINA HOŞGELDİNİZ ########");
+        System.out.println("Bir zamanlar, Java Adası güçlü bir medeniyetin yuvasıydı. Ancak, bu medeniyetin açgözlülüğü adayı lanetledi.");
+        System.out.println("Adanın lanetini kaldırmak için Üç Kutsal Hazine'yi bulmanız gerekiyor: Food, Firewood ve Water.");
+        System.out.println("Her hazine, tehlikeli yaratıklar tarafından korunuyor. Cesaretinizi toplayın ve bu laneti kaldırın!");
         System.out.println("");
         System.out.println("lÜTFEN BİR İSİM GİRİNİZ :");
-        // String playerName = scanner.nextLine();
-        Player player = new Player("SADOO");
+        String playerName = input.nextLine();
+        Player player = new Player(playerName);
         System.out.println("");
-        System.out.println("Keşiş " + player.getName() + " JAVA ADASINA HOŞ GELDİNİZ ");
-        System.out.println("");
-        System.out.println("Lütfen bir karakter seçiniz ");
+        System.out.println("Keşiş " + player.getName() + ", Java Adası'na hoş geldiniz!");
+        System.out.println("Lütfen bir karakter seçiniz:");
         player.selectChar();
 
         Location location = null;
@@ -68,12 +70,37 @@ public class Game {
                 break;
             }
 
+            if (checkAwards(player)) {
+                System.out.println("Tebrikler! Üç Kutsal Hazine'yi topladınız ve Java Adası'nın lanetini kaldırdınız!");
+                System.out.println("Adanın halkı artık huzur içinde yaşayabilir. Siz bir kahramansınız!");
+                System.out.println("######## OYUNU KAZANDINIZ ########");
+                break;
+            }
+
         }
 
        
     }
 
+    private boolean checkAwards(Player player) {
+        String[] awards = player.getInventory().getAwardList();
+        boolean hasFood = false;
+        boolean hasFirewood = false;
+        boolean hasWater = false;
 
+        for (String award : awards) {
+            if (award == null) {
+                continue; // Eğer ödül null ise, kontrolü atla
+            }
+            switch (award) {
+                case "Food" -> hasFood = true;
+                case "Firewood" -> hasFirewood = true;
+                case "Water" -> hasWater = true;
+            }
+        }
+
+        return hasFood && hasFirewood && hasWater; // Tüm ödüller varsa true döner
+    }
 
 }
 

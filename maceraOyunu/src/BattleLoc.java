@@ -16,57 +16,66 @@ public abstract class BattleLoc extends Location{
     
     @Override
     public boolean onLocation() {
-        int obsNumber = this.randomObstacleNumber();
+        System.out.println("######## " + this.getName().toUpperCase() + " BÖLGESİNE HOŞGELDİNİZ ########");
+        System.out.println("Bu bölgeyi temizlerseniz " + this.getAward() + " kazanacaksınız.");
+        System.out.println("Ancak dikkatli olun! Burada " + this.randomObstacleNumber() + " tane " + this.getObstacle().getName() + " sizi bekliyor.");
         System.out.println("");
-        System.out.println("Şuan " + this.getName() + " bölgesindesiniz. Burayı temizlerseniz " + this.getAward() + " kazanacaksınız.");
-        System.out.println("Dikkatli olun! Burada " + obsNumber + " tane " + obstacle.getName() + " ile karşı karşıyasınız.");
-        System.out.println("");
-        System.out.println("Canavarın sağlık puanı : " + obstacle.getHealth());
-        System.out.println("Canavarın hasar puanı : " + obstacle.getDamage());
-        System.out.println("Canavarın ödülü : " + obstacle.getAward());
-        System.out.println("");
-        System.out.println("\t---<S>avaş---ya da----Kaç---");
-        System.out.println("Eğer ('s', 'S') tuşuna basarsanız savaş başlayacak. Farklı bir tuşa basarsanız kaçmış olacaksınız.");
+        System.out.println("Hazır mısınız? ('S' tuşuna basarak savaşa başlayabilirsiniz, başka bir tuşa basarak kaçabilirsiniz.)");
         String selCase = input.nextLine().toUpperCase();
 
         if (selCase.equals("S")) {
-            System.out.println();
             System.out.println("Savaş başlıyor...!");
-            boolean result = combat(obsNumber);
-            if (result) {
-                System.out.println("Bölgedeki tüm düşmanları temizlediniz!");
-                this.getPlayer().getInventory().addAward(this.getAward());
-                return true; // Oyuncu savaşı kazandı, oyuna devam edebilir
-            } else {
-                System.out.println("Savaşı kaybettiniz!");
-                return false; // Oyuncu savaşı kaybetti, oyun biter
-            }
+            boolean result = combat(this.randomObstacleNumber());
+            return handleCombatResult(result); // Savaş sonucunu işleyen metodu çağır
         } else {
-            System.out.println("Kaçılıyor... Seni korkak!");
+            System.out.println("Kaçmayı seçtiniz. Bir sonraki sefere daha cesur olun!");
             return true; // Oyuncu kaçtı, oyuna devam edebilir
         }
     }
 
     public boolean combat(int obsNumber) {
+        Random random = new Random();
+
         for (int i = 1; i <= obsNumber; i++) {
             this.getObstacle().setHealth(this.getObstacle().getOrijinalHealth());
             playerStats();
             obstacleStats(i);
+
             while (this.getPlayer().getHealth() > 0 && this.getObstacle().getHealth() > 0) {
                 System.out.println("\t---<V>ur---ya da----Kaç---");
                 System.out.println("Eğer ('v', 'V') tuşuna basarsanız vuracaksınız. Farklı bir tuşa basarsanız kaçmış olacaksınız.");
                 String selCombat = input.nextLine().toUpperCase();
+
                 if (selCombat.equals("V")) {
                     System.out.println("----------------------------------------------------------");
-                    System.out.println("Siz vurdunuz...");
-                    this.getObstacle().setHealth(this.getObstacle().getHealth() - this.getPlayer().getTotalDamage());
-                    afterIHit();
-                    if (this.getObstacle().getHealth() > 0) {
-                        System.out.println("Canavar size vurdu...");
+
+                    // Vuruş sırasını rastgele belirle
+                    boolean playerFirst = random.nextBoolean(); // true: oyuncu önce vurur, false: düşman önce vurur
+
+                    if (playerFirst) {
+                        System.out.println("Siz önce vurdunuz...");
+                        this.getObstacle().setHealth(this.getObstacle().getHealth() - this.getPlayer().getTotalDamage());
+                        afterIHit();
+
+                        if (this.getObstacle().getHealth() > 0) {
+                            System.out.println("Canavar size vurdu...");
+                            int damage = this.getObstacle().getDamage() - this.getPlayer().getInventory().getArmor().getBlock();
+                            if (damage < 0) damage = 0;
+                            this.getPlayer().setHealth(this.getPlayer().getHealth() - damage);
+                            afterHitMe();
+                        }
+                    } else {
+                        System.out.println("Canavar önce vurdu...");
                         int damage = this.getObstacle().getDamage() - this.getPlayer().getInventory().getArmor().getBlock();
                         if (damage < 0) damage = 0;
                         this.getPlayer().setHealth(this.getPlayer().getHealth() - damage);
                         afterHitMe();
+
+                        if (this.getPlayer().getHealth() > 0) {
+                            System.out.println("Siz vurdunuz...");
+                            this.getObstacle().setHealth(this.getObstacle().getHealth() - this.getPlayer().getTotalDamage());
+                            afterIHit();
+                        }
                     }
                 } else {
                     System.out.println("Kaçtınız!");
@@ -78,11 +87,6 @@ public abstract class BattleLoc extends Location{
                 System.out.println("Öldünüz!");
                 return false; // Oyuncu öldü
             }
-
-            System.out.println("Düşmanı yendiniz!");
-            System.out.println("Ödül alındı: " + this.getObstacle().getAward());
-            this.getPlayer().setMoney(this.getPlayer().getMoney() + this.getObstacle().getAward());
-            System.out.println("Güncel Paranız: " + this.getPlayer().getMoney());
         }
 
         return true; // Tüm düşmanlar yenildi
@@ -116,6 +120,24 @@ public abstract class BattleLoc extends Location{
         System.out.println("Hasar : " + this.getObstacle().getDamage());
         System.out.println("----------------------------");
         System.out.println("");
+    }
+    
+    private boolean handleCombatResult(boolean result) {
+        if (result) {
+            System.out.println("Bölgedeki tüm düşmanları temizlediniz!");
+            this.getPlayer().getInventory().addAward(this.getAward());
+            System.out.println("Kazandığınız ödüller: ");
+            for (String award : this.getPlayer().getInventory().getAwardList()) {
+                if (award != null) {
+                    System.out.println("- " + award);
+                }
+            }
+            System.out.println("Bu bölgeyi temizlediniz. Ancak yolculuğunuz henüz bitmedi!");
+            return true; // Oyuncu savaşı kazandı, oyuna devam edebilir
+        } else {
+            System.out.println("Savaşı kaybettiniz!");
+            return false; // Oyuncu savaşı kaybetti, oyun biter
+        }
     }
 
     public int randomObstacleNumber() {
